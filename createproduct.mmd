@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Initiator
+    participant Approver
+    participant ProductAPI
+    participant ProductSoR
+    participant ProductSoE
+    participant EnterpriseEventHub
+    Initiator->>ProductAPI: 1 CreateProduct(ProductDetails)
+    ProductAPI->>ProductAPI: 2.1 ValidateProductDetails(ProductDetails)
+    ProductAPI->>ProductSoR: 2.2 CreateProduct(ProductDetails)
+    ProductSoR->>ProductSoR: 3.1 SetProductState("WaitingForApproval")
+    ProductSoR-->>ProductAPI: 3.2 Return Product entity
+    ProductAPI-->>Initiator: 4 Return Product entity
+    Approver->>ProductAPI: 5 ApproveProduct(ProductEntity)
+    ProductAPI->>ProductSoR: 6 ApproveProduct(ProductEntity)
+    ProductSoR->>ProductSoR: 7.1 SetProductState("Approved")
+    ProductSoR-->>ProductAPI: 7.2 Return Product entity
+    ProductAPI-->>Approver: 8 Return Product entity
+    ProductSoR->>ProductSoE: 9 Publish Product entity
+    ProductSoR->>EnterpriseEventHub: 10 Publish Product entity
